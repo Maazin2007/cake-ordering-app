@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %} cakes {% endblock %}
+
+{% block content %} 
+
+    <h1 class="main-heading">Cakes</h1>
+
+    <div class="content-holder">
+    {% for item in items %}
+        {% if item.category == "cake" %}
+            <div class="display-box">
+                <div class="img-box">
+                    <img src="{{ item.imgsource }}" alt="{{ item.name }}">
+                </div>
+                <div class="details-box">
+                    <div class="title-content-box">{{ item.name }}</div>
+                    <div class="description-content-box">{{ item.description }}</div>
+                    <div class="button-content-box">
+                        <p style="font-size: 30px; font-weight: bold; padding-top: 10px">{{ item.price }} SAR</p>
+                        <form action="/cart" method="post" style="justify-content: center; align-items: center;">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <button type="submit">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+{% endblock %}

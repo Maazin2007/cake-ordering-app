@@ -1,0 +1,37 @@
+{% extends "layout.html"%}
+
+{% block title %} register page {% endblock %}
+
+{% block content %} 
+
+<div class="main-login">
+    <div class="login-container">
+        <h3>Registration</h3>
+        {% set categories = [] %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for catagory, message in messages %}
+                {% set _ = categories.append(catagory) %}
+                    <p style="color: red">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="login-form">
+            <form action = "/register" method = "post">
+            <p>name:</p>
+            <input name = "name" id ="login-username" class="form-control highlight-on-click" autocomplete = "off" placeholder = "username" type="name">
+            <p>email:</p>
+            <input name = "mail" id ="login-username" class="form-control highlight-on-click {{ 'errorBox' if 'mail_error' in categories else ''}}" autocomplete = "off" placeholder = "username" type="email">
+            <p>password:</p>
+            <input name="password" id = "login-password" class="form-control highlight-on-click {{ 'errorBox' if 'password_error' in categories else ''}}" autocomplete = "off" placeholder = "password" type="password">
+            <p>confirm password:</p>
+            <input name="password_confirm" id ="login-password-repeat" class="form-control highlight-on-click {{ 'errorBox' if 'password_error' in categories else ''}}" autocomplete = "off" placeholder = "re-enter password" type="password">
+            <button type="submit" class="login-button" style="width: auto;">Register</button>
+            </form>
+            <div class="login-container-bottom">
+                <p>already registered!&nbsp;<a href="/login">Log In</a></p>
+            </div>
+    </div>
+</div>
+
+{% endblock %}

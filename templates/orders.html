@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %} orders {% endblock %}
+
+{% block content %} 
+
+<div class="page-heading">My Orders</div>
+
+<div class="page-container">
+    <div class="twenty-holder">
+        <div class="section-heading">Pickup Location</div>
+        <div class="section-content">
+            <div class="section-image">
+                <a href="https://www.google.com/maps/place/Maestro+Pizza/@29.9588121,40.2036533,17.19z/data=!4m6!3m5!1s0x1572bb7609f6ea99:0xffc8083454551cd0!8m2!3d29.9592541!4d40.2053516!16s%2Fg%2F11gpnhsw8m?entry=ttu&g_ep=EgoyMDI1MDYwMS4wIKXMDSoASAFQAw%3D%3D">
+                    <img src="static/images/location.jpg" alt="location image" style="width: 250px; height: 150px;">
+                </a>
+            </div>
+            <div class="section-text">
+                Al-unzalay street, Al-Azizyah, Sakaka, 72311, Saudi Arabia
+            </div>
+        </div>
+    </div>
+    <div class="eighty-holder">
+        <div class="order-row-heading">Orders</div>
+        <div class="order-row-content">
+            {% if not orders %}
+                <div class="order-row" style="font-size: 3.0rem;">
+                  No order Yet! 
+                </div>
+            {% else %}
+                {% for order_id, order in orders.items() %}
+                    <div class="order-row">
+                        <div class="order-item">
+                            <div class="order-item-heading">
+                                ORDER NO# {{ order_id }}
+                            </div>
+                            <div class="order-item-body">
+                                <div class="order-item-body-single"><span style="font-weight: bold;">Items:</span> </div>
+                                {% for item_id, item in order["items"].items() %}
+                                    <div class="order-item-body-single">{{ item.quantity }} x {{ item.name }}</div>
+                                {% endfor %}
+                                <div class="order-item-body-single"><span style="font-weight: bold;">Total</span> : SAR {{ order.value | round(2) }}</div>
+                                <div class="order-item-body-single"><span style="font-weight: bold;">Time Of Order</span> : {{ order.time }}</div>
+                            </div>
+                            <div class="order-item-status">
+                                <div class="order-item-status-text">STATUS:</div>
+                                <div class="order-item-status-button"><button class="status-buttons">{{ order.status }}</button></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %} <script src="{{ url_for('static', filename='order.js') }}"></script> {% endblock %}

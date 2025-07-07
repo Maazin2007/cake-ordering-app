@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block title %} Home | Cake Ordering {% endblock %}
+
+{% block content %}
+
+<!-- this is the html for the heading of the page-->
+<div class="page-heading-home">
+    <div class="page-heading-content">Home Page</div>
+</div>
+
+<!-- this is the html for the main weather box-->
+<div class="div-holder">
+    <div class="weather-div">
+        <div class="weather-box" id="weather-box">
+            <div class="weather-content-icon">
+                <div class="weather-icon-holder"><img id="weather-icon" src="" alt=""></div>
+            </div>
+            <div class="weather-content">
+                <div class="temperate-holder"><span id="actual_temp">35</span>°C</div>
+            </div>
+            <div class="weather-content-flexible">
+                <div class="weather-holder-text">feels like: <span id="feels_like">35</span>°C</div>
+                <div class="weather-holder-text">humidity: <span id="humidity">50</span>%</div>
+                <div class="weather-holder-text">max temp: <span id="max_temp">40</span>°C</div>
+            </div>
+        </div>
+
+        <!-- this is the html for the error message -->
+         <div class="weather-box" id="error-message" style="display: none;">
+            <div class="error-message" style="height: 100%; width: 100%; text-align: center; font-size: 2.0rem;">
+                <div class="text-holder">Cannot Fetch Data</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- this is the html for the best selling cakes-->
+<div class="hompage-content-holder">
+    <div class="homepage-content-holder-heading">    
+        <div class="text-holder-hompage">Best Selling Cake:</div>
+    </div>
+
+    <div class="homepage-content-holder-heading">
+        <div class="display-box" style="width: 50%;">
+            <div class="img-box">
+                <img src= "{{ cake_data.imgsource }}" alt="{{ cake_data.name }}">
+            </div>
+            <div class="details-box">
+                <div class="title-content-box"> {{ cake_data.name }} </div>
+                <div class="description-content-box"> {{ cake_data.description }} </div>
+                <div class="button-content-box" style="gap: 250px;">
+                    <p style="font-size: 30px; font-weight: bold; padding-top: 10px">{{ cake_data.price }} SAR</p>
+                    <form action="/cart" method="post" style="justify-content: center; align-items: center;">
+                        <input type="hidden" name="item_id" value="{{ cake_data.id }}">
+                        <button type="submit">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- this is the html for the best selling food -->
+<div class="hompage-content-holder">
+    <div class="homepage-content-holder-heading">    
+        <div class="text-holder-hompage">Best Selling Food:</div>
+    </div>
+
+    <div class="homepage-content-holder-heading">
+        <div class="display-box" style="width: 50%;">
+            <div class="img-box">
+                <img src= "{{ food_data.imgsource }}" alt="{{ food_data.name }}">
+            </div>
+            <div class="details-box">
+                <div class="title-content-box"> {{ food_data.name }} </div>
+                <div class="description-content-box"> {{ food_data.description }} </div>
+                <div class="button-content-box" style="gap: 250px;">
+                    <p style="font-size: 30px; font-weight: bold; padding-top: 10px">{{ food_data.price }} SAR</p>
+                    <form action="/cart" method="post" style="justify-content: center; align-items: center;">
+                        <input type="hidden" name="item_id" value="{{ food_data.id }}">
+                        <button type="submit">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block script %} <script src="{{ url_for('static', filename='index.js') }}"></script> {% endblock %}

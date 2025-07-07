@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %} cart {% endblock %}
+
+{% block content %}
+
+<div class="empty-cart" id="empty-heading" style="display: none;">
+    <div><span>Cart is empty</span></div>
+</div>
+
+<div class="cart-container">
+    {% if cart == 'empty' %}
+        <div class="empty-cart">
+            <h2 style="font-size: 3rem;">Cart is empty</h2>
+        </div>
+    {% else %}
+    <div class="item-container">
+        <div class="heading-container">
+            <div class="cart-table-heading" style="width: 60%;">item</div>
+            <div class="cart-table-heading">quantity</div>
+            <div class="cart-table-heading">unit price</div>
+        </div>
+        <div class="table-content-container">
+        {% for item_id, item in cart.items() %}
+            <div id="row-{{ item.id }}" class="cart-item-row">
+                <div class="cart-item-content" style="width: 60%;">
+                    <div class="image-holder-cart"><img src="{{ item.imgsource }}" alt="{{ item.name }}"></div>
+                    <div class="item-name-cart"><h3>{{ item.name }}</h3></div>
+                </div>
+                <div class="cart-table-heading">
+                    <div class="quantity-name-cart">
+                        <div class="quantity-holder">
+                            <button id="sub-{{ item.id }}" class="subtract-button">-</button>
+                            <h3 id="quantity-value-{{ item.id }}">{{ item.amount }}</h3>
+                            <button id="add-{{ item.id }}" class="add-button">+</button>
+                        </div>
+                        <div class="remove-holder">
+                                <button id="remove-{{ item.id }}">remove</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="cart-table-heading">
+                    <div class="quantity-name-cart" style="border: none;"><h3>{{ item.price }}&nbsp;SAR</h3></div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    <div class="total-container">
+        <div class="total-heading">
+            <h3>Cart Total</h3>
+        </div>
+        <div class="total-quantity"><p>Subtotal&nbsp;:&nbsp;<span id="subtotal">{{ sum }}</span>&nbsp;SAR</p></div>
+        <div class="total-quantity"><p>Tax&nbsp;(15%)&nbsp;:&nbsp;<span id="tax">{{ tax }}</span>&nbsp;SAR</p></div>
+        <div class="total-quantity"><p>Total&nbsp;:&nbsp;<span id="total">{{ total }}</span>&nbsp;SAR</p></div>
+        <div class="button-section"><form action="/place-order" method="post"><button class="maazin-button">Place Order</button></form></div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block script %}
+    <script src="{{ url_for('static', filename='cart.js') }}"></script>
+{% endblock %}

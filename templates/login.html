@@ -1,0 +1,36 @@
+{% extends "layout.html"%}
+
+{% block title %} login page {% endblock %}
+
+{% block content %} 
+
+<div class="main-login">
+    <div class="login-container">
+        <h3>Enter your credentials</h3>
+        {% set categories = [] %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for catagory, message in messages %}
+                    {% set _ = categories.append(catagory) %}
+                    {% if catagory == "loginDisplay"%}
+                        <p style="color: green">{{ message }}</p>
+                    {% endif %}
+                        <p style="color: red">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="login-form">
+            <form action = "/login" method = "post">
+            <p>email:</p>
+            <input name="mail" id ="login-username" class="form-control highlight-on-click {{'errorBox' if 'error_mail' in categories else ''}}" autocomplete = "off" placeholder = "username" type="email">
+            <p>password:</p>
+            <input name="password" id = "login-password" class="form-control highlight-on-click {{'errorBox' if 'error_password' in categories else ''}}" autocomplete = "off" placeholder = "password" type="password">
+            <button type="submit" class="login-button">Login</button>
+            </form>
+            <div class="login-container-bottom">
+                <p>if you are new please <a href="/register">register</a></p>
+            </div>
+    </div>
+</div>
+
+{% endblock %}

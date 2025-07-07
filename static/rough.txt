@@ -1,0 +1,23 @@
+WITH item_quantities AS (
+    SELECT items.name, SUM(order_items.item_quantity) AS sum
+    FROM order_items
+    JOIN items
+    ON order_items.item_id = items.id
+    JOIN orders
+    ON order_items.order_id = orders.id  
+    WHERE orders.status = 'Collected'
+        AND items.category = 'cake'
+        AND orders.order_time >= datetime('now', '-1 month')
+    GROUP BY items.name 
+)
+
+
+SELECT name FROM (
+    SELECT name FROM item_quantities ORDER BY sum DESC LIMIT 1
+)
+
+UNION
+
+SELECT name FROM (
+    SELECT name FROM item_quantities ORDER BY sum ASC LIMIT 1
+);

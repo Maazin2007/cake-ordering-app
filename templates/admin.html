@@ -1,0 +1,294 @@
+{% extends "layout.html" %}
+
+{% block title %} admin {% endblock %}
+
+{% block content %}
+<div class="page-heading" style="border: none;">Admin Panel</div>
+
+<div class="full-page-flexible">
+    <div class="admin-twenty-percent-flexible" style="margin-left: 20px; border-right: 2px solid black; padding-right: 20px;">
+        <button onclick="changeDisplayOrders()" class="button-block" style="border: 2px solid black; border-radius: 15px;">
+            <div>Current Orders</div>
+        </button>
+
+        <button onclick="changeDisplayFinance()" class="button-block" style="border: 2px solid black; border-radius: 15px;">
+            <div>Finances</div>
+        </button>
+
+        <button onclick="changeDisplayOldOrders()" class="button-block" style="border: 2px solid black; border-radius: 15px;">
+            <div>Order History</div>
+        </button>
+
+        <button onclick="changeDisplaySearchItem()" class="button-block" style="border: 2px solid black; border-radius: 15px;">
+            <div>Add Product</div>
+        </button>
+    </div>
+
+    <div id="currentOrders" class="admin-eighty-percent-flexible">
+        {% if not orders %}
+         <div class="empty-div">THERE ARE NO CURRENT ORDERS</div>
+        {% else %}
+            {% for order_id, order in orders.items() %}
+                <div id="box-{{ order_id }}" class="admin-order-box">
+                    <div class="admin-order-box-heading">
+                        <div class="admin-order-box-heading-text" style="margin-right: 200px">ORDER# {{ order_id }}</div>
+                        <div class="admin-order-box-heading-text">{{ order.name }}</div>
+                    </div>
+            
+                    <div class="admin-order-box-content">
+                        <div class="admin-order-box-content-body" style="border-right: 1px solid black;">
+                            <div class="admin-order-box-content-text" style="width: 100%; text-align: center; border-bottom: 1px solid black;"><span style="font-weight: bold; font-size: 1.5rem;">Order Items:<span></div>
+                                <ul>
+                                    {% for item_id, item in order.stuff.items() %}
+                                        <li><div class="admin-order-box-content-text"><span style="font-weight: bold; font-size: 1.5rem;">{{ item.quantity }} x {{ item.name }}</span></div></li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="admin-order-box-content-text"><span style="font-weight: bold; font-size: 1.5rem;">Time: {{ order.order_time }}</span></div>
+            
+                                <div class="total-div">Total : {{ order.total_price }} SAR</div>
+                        </div>
+                        <div class="admin-order-box-content-status">
+                                <div class="admin-order-box-content-body"><span style="font-weight: bold; font-size: 2.0rem; border-bottom: 2px solid black;">CURRENT STATUS:</span></div>
+                                <div class="admin-order-box-content-body"><button class="maazin-button status-buttons"><span class="status-buttons" data-order-id="{{ order_id }}" style="font-weight: bold; font-size: 2.0rem;">{{ order.status }}</span></button></div>
+                        </div>
+                    </div>
+            
+                    <div class="admin-order-box-footer" style="border-top: 1px solid black; padding: 5px">
+                        {% if order.status == "baking" %}
+                            <div class="button-holder"><button data-user-id="{{ order.user_id }}" data-order-id="{{ order_id }}" class="button-ready maazin-button"><span style="font-size: 2.0rem;">Ready</span></button></div>
+                        {% endif %}
+                        {% if order.status == "Ready" %}
+                            <div class="button-holder"><button data-user-id="{{ order.user_id }}" data-order-id="{{ order_id }}" class="button-collected maazin-button"><span style="font-size: 2.0rem;">Collected</span></button></div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div id="finance" class="admin-eighty-percent-flexible">
+        <div class="finance-section">
+            <div class="finance-section-div">
+                <div class="finance-section-holder">
+                    <div class="finance-section-holder-heading">
+                        <div class="center-text-div">FINANCES</div>
+                    </div>
+
+                    <div class="finance-section-holder-body">
+                        <div class="data-holder">
+                            <div class="data-holder-text">Revenue: <span id="revenue-holder">{{ data.revenue }}</span> SAR</div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text"><span style="color: blue;">Production Cost: </span><span id="cost-holder">{{ data.cost }}</span> SAR</div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text"><span style="color: orange;">Extra expenses: </span><span id="expense-holder">{{ expenses.total_expenses }}</span> SAR</div>
+                        </div>
+                        <div class="data-holder">
+                                <div id="profit-div" class="data-holder-text" style="display: {{ 'flex' if data.profit_status == 'true' else 'none' }};"><span style="color: green;">Total Profit: &nbsp;</span><span id="profit-holder">&nbsp;{{ data.profit }}</span> &nbsp;SAR</div>
+                                <div id="loss-div" class="data-holder-text" style="display: {{ 'flex' if data.profit_status == 'false' else 'none' }};"><span style="color: red;">Total Loss: &nbsp;</span><span id="loss-holder">&nbsp;{{ data.profit }}</span> &nbsp;SAR</div>
+                        </div>
+                        <div class="data-holder">
+                                <div id="percentageProfitDiv" class="data-holder-text" style="display: {{ 'flex' if data.profit_status == 'true' else 'none' }}">Precentage Profit:&nbsp;<span id="percentageProfit">{{ data.percentageProfit }}</span>%</div>
+                                <div id= "percentageLossDiv" class="data-holder-text" style="display: {{ 'flex' if data.profit_status == 'false' else 'none' }}">Precentage Loss:&nbsp;<span id="percentageLoss">{{ data.percentageLoss }}</span>%</div>
+                        </div>
+                        <div class="data-holder-bar">
+                            {% if data.profit_status == 'true' %}
+                                <div class="total-bar" id="full-bar">
+                                    <div class="bar-item" style="background-color: green; width: {{ data.percentageProfit }}%;"></div>
+                                    <div class="bar-item" style="background-color: blue; width: {{ data.costPercentage }}%"></div>
+                                    <div class="bar-item" style="background-color: orange; width: {{ data.expensesPercentage }}%"></div>
+                                </div>
+                            {% endif %}
+                            {% if data.profit_status == 'false' %}
+                                <div id="error_display" class="data-holder-text" style="text-align: center; width: 100%;">No Profit</div>
+                            {% endif%}
+                                <div id="error_display" class="data-holder-text" style="text-align: center; width: 100%; display: none;">No Profit</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="finance-section-div">
+                <div class="finance-section-holder">
+                    <div class="finance-section-holder-heading">
+                        <div class="center-text-div">EXPENSES</div>
+                    </div>
+
+                    <div id ="expense-body" class="finance-section-holder-body">
+                        <div id="try-piece-expense" class="data-holder" style="display: none;">
+                            <div class="data-holder-text"> key :  expense SAR<button data-expense-name="key" class="maazin-button remove-expense-button" style="margin-left: 230px;">x</button></div>
+                        </div>
+                        {% for key, expense in expenses.expenses.items() %}
+                            <div id="expense-div-{{ key|replace(' ', '-')|lower }}" class="data-holder" style="padding: 5px; display: flex; flex-direction: column;">
+                                <div class="data-holder-text">{{ key }}: {{ expense }} SAR</div>
+                                <div class="data-holder-text"><button data-expense-name="{{ key }}" class="maazin-button remove-expense-button">REMOVE</button></div>
+                            </div>
+                        {% endfor %}
+                        <div class="data-holder" style="display: flex; flex-direction: column;">
+                            <div id="expense-error-holder" class="data-holder" style="border-bottom: none; width: 100%; display: none;">
+                                <div id="expense-holder-text" class="data-holder-text" style="color: red; border-bottom: none; text-align: center; width: 100%;">There was an error</div>
+                            </div>
+                            <div class="input-container"><input id="expense_name" placeholder="ENTER EXPENSE" type="text"></div>
+                            <div class="input-container"><input id="expense_amount" placeholder="ENTER AMOUNT" type="number"></div>
+                        </div>
+
+                        <div class="data-holder">
+                            <div class="data-holder-text" style="width: 100%;"><button id="add-expense-button" class="maazin-button" style="margin-left: 130px;">ADD EXPENSE</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="finance-section" style="width: 50%; margin-right: 50%;">
+            <div class="finance-section-div" style="width: 100%;">
+                <div class="finance-section-holder">
+                    <div class="finance-section-holder-heading">
+                        <div class="center-text-div">ORDER STATISTICS</div>
+                    </div>
+
+                    <div class="finance-section-holder-body">
+                        <div class="data-holder">
+                            <div class="data-holder-text">Total Orders: <span id="orders-holder">{{ data.total_number_orders }}</span></div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text">Completed Orders: <span id="completed-orders-holder">{{ data.total_collected_orders }}</span></div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text">Pending Orders: <span id="pending-orders-holder">{{ data.total_pending_orders }}</span></div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text">Average size: <span id="average-size-holder">{{ data.average_order_quantity }}</span></div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text">Average value: <span id="average-price-value">{{ data.average_order_value|round(2) }} SAR</span></div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text">Best Selling Cake: <span id="best-selling-cake">{{ data.cake_data.best_selling }}</span></div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text">Worst Selling Cake: <span id="worst-selling-cake">{{ data.cake_data.worst_selling }}</span></div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text">Best Selling Food: <span id="best-selling-food">{{ data.food_data.best_selling }}</span></div>
+                        </div>
+                        <div class="data-holder">
+                            <div class="data-holder-text">Worst Selling Food: <span id="worst-selling-food">{{ data.food_data.worst_selling }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="oldOrders" class="admin-eighty-percent-flexible">
+        <!-- page header title -->
+        <div class="full-width-flexible">
+            <div class="text-holder" style="width: 70% text-align: center; font-size: 2.5rem; border-bottom: 2px solid black;">Search Past Orders</div>
+        </div>
+
+        <!-- search input button section // have to improve CSS-->
+         <div class="full-width-flexible">
+            <div class="form-section-holder" style="display: flex; flex-direction: row;">
+                <input placeholder="Type a username" id="name_input" type="text">
+                <button id="search_button">Search</button>
+            </div>
+         </div>
+
+         <!-- now for the div to hold all the orders-->
+        <div class="order-holder" id="order_holder"> 
+            <!-- this is the main content sample div -->
+            <div class="admin-order-box" style="display: none;">
+                <div class="admin-order-box-heading">
+                    <div class="admin-order-box-heading-text" style="margin-right: 200px">ORDER# 1234</div>
+                    <div class="admin-order-box-heading-text">Maazin</div>
+                </div>
+        
+                <div class="admin-order-box-content">
+                    <div class="admin-order-box-content-body" style="border-right: 1px solid black;">
+                        <div class="admin-order-box-content-text" style="width: 100%; text-align: center; border-bottom: 1px solid black;"><span style="font-weight: bold; font-size: 1.5rem;">Order Items:<span></div>
+                            <ul>
+                                <li><div class="admin-order-box-content-text"><span style="font-weight: bold; font-size: 1.5rem;">chocollate x 4</span></div></li>
+                            </ul>
+                            <div class="admin-order-box-content-text"><span style="font-weight: bold; font-size: 1.5rem;">Time: 12:04:06</span></div>
+        
+                            <div class="total-div">Total : 26.0 SAR</div>
+                    </div>
+                    <div class="admin-order-box-content-status">
+                            <div class="admin-order-box-content-body"><span style="font-weight: bold; font-size: 2.0rem; border-bottom: 2px solid black;">CURRENT STATUS:</span></div>
+                            <div class="admin-order-box-content-body"><button class="maazin-button status-buttons" style="width: fit-content;"><span class="status-buttons" style="font-weight: bold; font-size: 2.0rem;">Collected</span></button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-holder" id="order_holder_error" style="display: none;">
+            <div class="admin-order-box-error">
+                <div class="text-holder" style="font-size: 2.5rem;"><span id="error_text">Name not Found</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addItem" class="admin-eighty-percent-flexible">
+        <div class="full-width-flexible" style="margin-bottom: 10px;">
+            <h1 class="main-heading" style="border-bottom: 2px solid black;">Adding Item</h1>
+        </div>
+        <div class="full-width-flexible">
+            <div class="adding-item-form" style="margin-bottom: 50px;">
+                <div class="form-section-holder">
+                    <div class="input-holder" style="margin-bottom: 1px;">
+                        <h1 style="text-align: center; border-bottom: 2px solid black;">Product Details</h1>
+                        <p id="display_message_screen" style="font-size: 30px; color: green; text-align: center; visibility: hidden;">Succefully Added</p>
+                    </div>
+                    <div class="input-holder">
+                        <p class="input-heading">product name:</p>
+                        <input id="product_name_add" class="custom-input" style="margin-botton: 0px; padding-botton: 3px;" type="text" placeholder="Enter name of the Product" autocomplete="off">
+                        <p id="product_name_error" class="error-text" style="visibility: hidden;">&nbsp;</p>
+                    </div>
+                    <div class="input-holder">
+                        <p style="font-size: 20px;">product price:</p>
+                        <input id="product_price_add" class="custom-input" type="number" placeholder="Enter Product Price" autocomplete="off">
+                        <p id="product_price_error" class="error-text" style="visibility: hidden;">&nbsp;</p>
+                    </div>
+                    <div class="input-holder" style="margin-top: 5px;">
+                        <p style="font-size: 20px;">product description:</p>
+                        <textarea id="description" name="description" rows="5" placeholder="Enter item description..."></textarea>
+                        <p class="error-text" id="description_error" style="visibility: hidden;">&nbsp;</p>
+                    </div>
+                </div>
+                <div class="form-section-holder" style="margin-left: 20px; margin-top: 20px;">
+                    <div class="input-holder">
+                        <p style="font-size: 20px;">production cost:</p>
+                        <input id="production_cost_add" class="custom-input" type="number" placeholder="Enter Cost of Production" autocomplete="off">
+                        <p id="production_cost_error" class="error-text" style="visibility: hidden;">&nbsp;</p>
+                    </div>
+                    <div class="input-holder">
+                        <p style="font-size: 20px;">quantity:</p>
+                        <input id="product_quantity_add" class="custom-input" type="number" placeholder="Enter quantity of Product" autocomplete="off">
+                        <p id="product_quantity_error" class="error-text" style="visibility: hidden;">&nbsp;</p>
+                    </div>
+                    <div class="input-holder">
+                        <p style="font-size: 20px;">Category:</p>
+                        <select name="category" id="category">
+                            <option value="" disabled selected>-- Select an Category --</option>
+                            <option value="cake">Cake</option>
+                            <option value="food">Food</option>
+                        </select>
+                    </div>
+                    <div class="input-holder" style="margin-top: 13px;">
+                        <p style="font-size: 20px;">Upload Image (1200px x 1200px)</p>
+                        <label id="imageUploadLabel" for="imageUpload" class="upload-label">Click to Upload Image</label>
+                        <input type="file" id="imageUpload" accept="image/*">
+                        <img id="imagePreview" src="#" alt="Image Preview" style="display: none;" />
+                    </div>
+                    <div class="input-holder" style="margin-top: 15px;">
+                        <button id="addItemButton" style="font-size: 2rem;">Add Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %} <script src="{{ url_for('static', filename='admin.js') }}"></script> {% endblock %}
