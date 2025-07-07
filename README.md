@@ -1,2 +1,21 @@
-# cake-ordering-app
-A full-stack web application for a homemade bakery. Features include product listing, shopping cart, order placement, admin dashboard with financial insights, and image upload functionality. Built with Flask, SQLite3, HTML, CSS, and JavaScript.
+# 🍰 Cake Ordering Web App
+
+A full-stack web application for a homemade bakery, built using Flask, SQLite, and vanilla JavaScript.
+
+## 🚀 Features
+
+- User registration and login  
+- Add to cart and checkout  
+- Order history tracking  
+- Admin dashboard with:  
+  - Order management  
+  - Expense tracking  
+  - Revenue and sales analytics  
+- Image upload for new items  
+- Responsive design  
+
+## 🔧 Tech Stack
+
+- **Frontend:** HTML5, CSS3, JavaScript  
+- **Backend:** Python (Flask)  
+- **Database:** SQLite3  
